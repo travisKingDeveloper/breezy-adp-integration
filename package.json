@@ -1,0 +1,17 @@
+{
+  "name": "breezy-adp-integration",
+  "version": "1.0.0",
+  "description": "Public facing Express App to facilitate the communication / sync with ADP for bidirectional data sync",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./index.js",
+    "start:dev": "nodemon ./index.js"
+  },
+  "author": "Travis King",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "winston": "^3.3.3",
+    "breezy-core": "git+ssh://git@github.com/breezy-hr/breezy-core.git#989785a06f2623a320bf7725eebfb1065a636937"
+  }
+}
