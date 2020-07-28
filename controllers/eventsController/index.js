@@ -13,7 +13,7 @@ router.use('/accessManagement', accessManagementController)
 router.use((err, req, res, next) => {
   const error = errorCodes[err.code] || errorCodes.UNKNOWN_ERROR
 
-  console.error('INTEGRATION EVENT ERROR', error.message)
+  console.error('INTEGRATION EVENT ERROR', error)
 
   res.status(200).send({
     success: "false",

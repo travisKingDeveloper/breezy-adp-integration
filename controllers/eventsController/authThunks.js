@@ -2,7 +2,7 @@ const authorization = require('auth-header')
 const crypto = require('crypto')
 const { uuid } = require('uuidv4')
 const request = require('request-promise-native')
-const { AUTH } = require('../../config')
+const { EVENTS_AUTH } = require('../../config')
 const { saveEvent, errorCodes } = require('../../services/integrationEventService')
 
 function formatParameters(oauth, queryParams) {
@@ -40,9 +40,9 @@ function validateOAuthSignature(req, res, next) {
     return next(err)
   }
 
-  if (consumerKey !== AUTH.CONSUMER_KEY) {
+  if (consumerKey !== EVENTS_AUTH.CONSUMER_KEY) {
     console.error(root, 'AUTH Consumer Key is incorrect')
-    const err = new Error(`${root}  Incorrect Consumer Key EXPECTED: ${AUTH.CONSUMER_KEY} RECEIVED: ${consumerKey}`)
+    const err = new Error(`${root}  Incorrect Consumer Key EXPECTED: ${EVENTS_AUTH.CONSUMER_KEY} RECEIVED: ${consumerKey}`)
     err.status = errorCodes.UNAUTHORIZED
     err.response = "Unable to authenticate Client"
     return next(err)
@@ -58,17 +58,17 @@ function validateOAuthSignature(req, res, next) {
 
   //TODO TKING Handle Nonce Attacks
   const urlWithoutQueryParams = req.originalUrl.split('?')[0]
-  const requestUri = `${req.protocol}://${req.get('Host')}${urlWithoutQueryParams}`;
+  const requestUri = `https://${req.get('Host')}${urlWithoutQueryParams}`;
 
   const formattedParams = formatParameters(auth.params, req.query)
 
+  // TODO TKING Not sure if http/ or https/ because of nginx I assume it will hit https port
   const text = `${req.method}&${encodeURIComponent(requestUri)}&${encodeURIComponent(formattedParams)}`
-  const key = `${AUTH.CONSUMER_SECRET}&` //Token shared secret is not in the requests given
+  const key = `${EVENTS_AUTH.CONSUMER_SECRET}&` //Token shared secret is not in the requests given
 
   console.log(`${root} text used: ${text} key used: ${key}`)
   const computedHash = crypto.createHmac('sha1', key).update(text).digest().toString('base64')
   const encodedComputedHash = encodeURIComponent(computedHash)
-
 
   console.log(`${root} Provided Hash: ${oauthSignature}, Computed Hash: ${encodedComputedHash} Equal? ${encodedComputedHash === oauthSignature}`)
   if (encodedComputedHash !== oauthSignature) {
@@ -94,7 +94,7 @@ async function fetchEvent(req, res, next) {
     const [urlWithoutQueryParams, queryParams] = eventUrl.split('?')
 
     const formattedParams = formatParameters({
-      oauth_consumer_key: AUTH.CONSUMER_KEY,
+      oauth_consumer_key: EVENTS_AUTH.CONSUMER_KEY,
       oauth_signature_method: "HMAC-SHA1",
       oauth_timestamp: timestamp,
       oauth_nonce: nonce,
@@ -102,17 +102,15 @@ async function fetchEvent(req, res, next) {
     }, {})
 
     const text = `GET&${encodeURIComponent(urlWithoutQueryParams)}&${encodeURIComponent(formattedParams)}`
-    const key = `${AUTH.CONSUMER_SECRET}&` //Token shared secret is not in the requests given
+    const key = `${EVENTS_AUTH.CONSUMER_SECRET}&` //Token shared secret is not in the requests given
     let computedHash = crypto.createHmac('sha1', key).update(text).digest().toString('base64')
-
-    console.log('stobbping')
 
     const signature = encodeURIComponent(computedHash)
 
     const eventResponse = (await request.get(eventUrl, {
       headers: {
         "Accept": "application/JSON",
-        "Authorization": `OAuth oauth_consumer_key="${AUTH.CONSUMER_KEY}",oauth_signature_method="HMAC-SHA1",oauth_timestamp="${timestamp}",oauth_nonce="${nonce}",oauth_signature="${signature}",oauth_version="1.0"`
+        "Authorization": `OAuth oauth_consumer_key="${EVENTS_AUTH.CONSUMER_KEY}",oauth_signature_method="HMAC-SHA1",oauth_timestamp="${timestamp}",oauth_nonce="${nonce}",oauth_signature="${signature}",oauth_version="1.0"`
       }
     }).catch(err => {
       console.error(`[ADP-FETCH-EVENT] Error fetching from url ${eventUrl}`)
@@ -122,7 +120,12 @@ async function fetchEvent(req, res, next) {
 
     req.event = JSON.parse(eventResponse)
 
+
     await saveEvent(req.event)
+
+    if (!req.event.payload) {
+      throw new Error(`Payload is not available for event: ${eventUrl}`)
+    }
 
     next()
   } catch(err) {

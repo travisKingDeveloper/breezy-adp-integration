@@ -10,9 +10,11 @@
   "author": "Travis King",
   "license": "ISC",
   "dependencies": {
+    "adp-connection": "^2.1.1",
     "auth-header": "^1.0.0",
     "breezy-core": "git+ssh://git@github.com/breezy-hr/breezy-core.git#989785a06f2623a320bf7725eebfb1065a636937",
     "express": "^4.17.1",
+    "query-string": "^6.13.1",
     "request": "^2.88.2",
     "request-promise-native": "^1.0.8",
     "uuidv4": "^6.1.1"
