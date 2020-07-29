@@ -1,6 +1,6 @@
 const mongo = require('breezy-core/src/db/mongoClient')()
 
-function getIntegration (serviceId, { companyId, organizationId }) {
+async function getIntegration (serviceId, { companyId, organizationId }) {
   try {
     let criteria = {
       "type": serviceId
@@ -9,13 +9,21 @@ function getIntegration (serviceId, { companyId, organizationId }) {
     if (companyId)
       criteria.company_id = companyId
 
-    if (organizationId)
-      criteria.organization_id = organizationId
+    if (organizationId) {
+      criteria[serviceId] = {}
+      criteria[serviceId].organization_id = organizationId
+    }
 
-    return mongo.getDocumentAsync({
+    const doc = await mongo.getDocumentAsync({
       collection: "integration",
       criteria: criteria
     })
+
+    return {
+      ...doc,
+      ...doc[serviceId],
+      [serviceId]: undefined,
+    }
   } catch (err) {
     console.error(`Unable to find integration for service id: ${serviceId} and company id: ${companyId}`)
     throw err

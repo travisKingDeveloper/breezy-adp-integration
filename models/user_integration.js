@@ -25,15 +25,14 @@ function archiveUserIntegration(userId, companyId, archived = true) {
 }
 
 function updateUserIntegration(userId, companyId, updates) {
-  return mongo.updateDocumentAsync({
+  return mongo.findAndModifyAsync({
     collection: COLLECTION_NAME,
     criteria: {
       user_id: userId,
       company_id: companyId,
     },
-    updates,
+    updates
   })
-
 }
 
 module.exports = {

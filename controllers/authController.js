@@ -1,6 +1,5 @@
 const router = require('express').Router()
-const authService = require('../services/authService')
-
+const service = require('../services/authService')
 
 const root = `[ADP-AUTH]`
 function sample(req, res) {
@@ -14,17 +13,24 @@ async function initiateSSO(req, res) {
   console.log('req.query', req.query)
 
 
-  res.redirect(authService.getRedirectUrl())
+  res.redirect(service.getRedirectUrl())
 }
 
-function redirectToPlatform(req, res) {
-  console.log('req.path', req.path)
-  console.log('req.query', req.query)
-  if (req.query.error) {
-    const { error, error_description } = req.query
-    res.status(500).json({ error, error_description })
-  } else {
-    res.redirect(authService.getATSRedirectUrl())
+async function redirectToPlatform(req, res, next) {
+  try {
+    console.log('req.path', req.path)
+    console.log('req.query', req.query)
+    // TODO TKING Verify State is correct
+
+    if (req.query.error) {
+      const { error, error_description } = req.query
+      return res.status(500).json({ error, error_description })
+    } else {
+      return res.redirect(await service.getClientCredentialsRedirectUrl(req.query.code, req.query.state))
+    }
+  } catch(err) {
+    console.error('ERROR Redirecting to ATS', err)
+    next(err)
   }
 }
 
