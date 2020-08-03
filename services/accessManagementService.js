@@ -1,4 +1,4 @@
-const integrationAdpModel = require('../models/integration_adp')
+const integrationService = require('./integrationService')
 const userIntegrationModel = require('../models/user_integration')
 const userService = require('./userService')
 
@@ -19,7 +19,7 @@ async function processAssignedEvent(eventPayload) {
     }
   } = eventPayload
 
-  const integration = await integrationAdpModel.getIntegrationRun({ organizationId: organizationOID })
+  const integration = await integrationService.getIntegrationRun({ organizationId: organizationOID })
   const companyId = integration.company_id
 
   let user = await userService.getUserByEmail(email)
@@ -69,7 +69,7 @@ async function processUnassignedEvent(eventPayload) {
     }
   } = eventPayload
 
-  const integration = await integrationAdpModel.getIntegrationRun({ organizationId: organizationOID })
+  const integration = await integrationService.getIntegrationRun({ organizationId: organizationOID })
   const companyId = integration.company_id
 
   let user = await userService.getUserByEmail(email)

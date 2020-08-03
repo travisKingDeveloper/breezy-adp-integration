@@ -26,10 +26,12 @@ async function redirectToPlatform(req, res, next) {
       const { error, error_description } = req.query
       return res.status(500).json({ error, error_description })
     } else {
-      return res.redirect(await service.getClientCredentialsRedirectUrl(req.query.code, req.query.state))
+      const appRedirectUrl = await service.interrogateClientCredentials(req.query.code, req.query.state)
+
+      return res.redirect(appRedirectUrl)
     }
   } catch(err) {
-    console.error('ERROR Redirecting to ATS', err)
+    console.error(root, 'ERROR Redirecting to ATS', err)
     next(err)
   }
 }

@@ -1,3 +1,3 @@
 module.exports = {
-  ...require('./integration_adp')
+  ...require('../services/integrationService')
 }

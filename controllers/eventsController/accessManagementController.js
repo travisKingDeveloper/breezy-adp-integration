@@ -1,5 +1,6 @@
 const router = require('express').Router()
 const service = require('../../services/accessManagementService')
+const { validateOAuthSignature, fetchEvent } = require('./authThunks')
 
 async function userAssignment(req, res, next) {
   try {
@@ -30,6 +31,8 @@ async function userUnassignment(req, res, next) {
   }
 }
 
+router.use(validateOAuthSignature)
+router.use(fetchEvent)
 router.get('/user-assignment', userAssignment)
 router.get('/user-unassignment', userUnassignment)
 

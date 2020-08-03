@@ -1,19 +1,18 @@
 const router = require('express').Router()
-const { validateOAuthSignature, fetchEvent } = require('./authThunks')
 const { errorCodes } = require('../../services/integrationEventService')
 
 const subscriptionEventController = require('./subscriptionEventsController')
 const accessManagementController = require('./accessManagementController')
+const validationController = require('./validationController')
 
-router.use(validateOAuthSignature)
-router.use(fetchEvent)
 router.use('/subscription', subscriptionEventController)
 router.use('/accessManagement', accessManagementController)
+router.use('/validation', validationController)
 
 router.use((err, req, res, next) => {
   const error = errorCodes[err.code] || errorCodes.UNKNOWN_ERROR
 
-  console.error('INTEGRATION EVENT ERROR', error)
+  console.error('INTEGRATION EVENT ERROR', error, err.message)
 
   res.status(200).send({
     success: "false",

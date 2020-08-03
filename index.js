@@ -1,14 +1,16 @@
 // TODO TKING initialize Logging in app
 const express = require('express')
 
-const that = console.error
-console.error = (...params) => that('ERROR', ...params)
-
 const config = require('./config')
 require('breezy-core/src/util/breezy-config').initConfig(config)
 
+const that = console.error
+console.error = (...params) => that('ERROR', ...params)
+
 const app = express()
 app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+
 
 app.use(function (req, res, next) {
   console.log(`[ADP_INTEGRATION] `, req.path, req.method)

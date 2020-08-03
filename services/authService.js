@@ -6,7 +6,7 @@ const connectionOpts = {
   clientSecret: SSO.CLIENT_SECRET,
   granttype: 'authorization_code',
   sslCertPath: '/Users/travisking/Repositories/breezy-adp-integration/ssl/adp-cert.cer',
-  sslKeyPath: '/Users/travisking/Repositories/breezy-adp-integration/ssl/adp-cert.crt',
+  sslKeyPath: '/Users/travisking/Repositories/breezy-adp-integration/ssl/adp-cert.key',
   callbackUrl: SSO.REDIRECT_URL,
 };
 
@@ -17,8 +17,7 @@ function getRedirectUrl() {
   return conn.getAuthorizationRequest()
 }
 
-
-async function getClientCredentialsRedirectUrl(userCode, state) {
+async function interrogateClientCredentials(userCode, state) {
   const conn = adpConnection.createConnection({ ...connectionOpts, authorizationCode: userCode });
 
   await createConnection(conn)
@@ -45,5 +44,5 @@ function createConnection(conn) {
 
 module.exports = {
   getRedirectUrl,
-  getClientCredentialsRedirectUrl,
+  interrogateClientCredentials,
 }
