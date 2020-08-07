@@ -24,6 +24,8 @@ async function getIntegration (serviceId, { companyId, organizationId }) {
       criteria: criteria
     })
 
+    if (!doc) return {}
+
     return {
       ...doc,
       ...doc[serviceId],

@@ -5,7 +5,9 @@ module.exports = {
   },
   COMPANY_SERVICE: {
     URL: 'http://localhost:8082'
-
+  },
+  ATS: {
+    URL: 'http://localhost:8080'
   },
   SSO: {
     REDIRECT_URL: 'https://integrations-travis.ngrok.io/auth/sso/redirect',

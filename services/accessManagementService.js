@@ -27,7 +27,6 @@ async function processAssignedEvent(eventPayload) {
   if (!user) {
     // TODO TKING Investigate fields
     //  Missing fields tz_offset
-    //  How to make admin? admin = true === appAdmin
     user = await userService.createUser(companyId, {
       email,
       name: `${firstName} ${lastName}`,
@@ -42,7 +41,7 @@ async function processAssignedEvent(eventPayload) {
     }
   }
 
-  let userIntegration = await userIntegrationModel.getUserIntegration(user._id, companyId)
+  let userIntegration = await userIntegrationModel.getUserIntegration(user._id, companyId, { archvied: undefined })
 
   if (!userIntegration) {
     await userIntegrationModel.createUserIntegration({
