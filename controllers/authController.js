@@ -1,7 +1,7 @@
 const router = require('express').Router()
 const service = require('../services/authService')
 
-const root = `[ADP-AUTH]`
+const root = '[ADP-AUTH]'
 function sample(req, res) {
   console.log(root, 'Hit me!')
 
@@ -12,7 +12,6 @@ async function initiateSSO(req, res) {
   console.log('req.path', req.path)
   console.log('req.query', req.query)
 
-
   res.redirect(service.getRedirectUrl())
 }
 
@@ -20,7 +19,6 @@ async function redirectToPlatform(req, res, next) {
   try {
     console.log('req.path', req.path)
     console.log('req.query', req.query)
-    // TODO TKING Verify State is correct
 
     if (req.query.error) {
       const { error, error_description } = req.query
@@ -28,7 +26,7 @@ async function redirectToPlatform(req, res, next) {
     } else {
       const appRedirectUrl = await service.interrogateClientCredentials(req.query.code, req.query.state)
 
-      return res.redirect(appRedirectUrl)
+      return res.redirect(service.createAppConsentLink(appRedirectUrl))
     }
   } catch(err) {
     console.error(root, 'ERROR Redirecting to ATS', err)
@@ -36,8 +34,11 @@ async function redirectToPlatform(req, res, next) {
   }
 }
 
-router.all('/sso', initiateSSO)
-router.all('/sso/redirect', redirectToPlatform)
-router.all('/sso/logout', sample)
+
+
+router.get('/sso', initiateSSO)
+router.get('/sso/redirect', redirectToPlatform)
+router.get('/sso/logout', sample)
+// router.all('/company/tokens', )
 
 module.exports = router

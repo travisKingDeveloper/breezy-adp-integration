@@ -31,8 +31,13 @@ function saveEvent(event) {
   return integrationEventModel.saveIntegrationEvent(event)
 }
 
+function getEvent(eventId) {
+  return integrationEventModel.getIntegrationEvent(eventId)
+
+}
 
 module.exports = {
+  getEvent,
   saveEvent,
   integrationEventTypes: EVENT_TYPES,
   errorCodes: ADP_EVENT_ERROR_CODES,

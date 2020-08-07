@@ -20,8 +20,33 @@ async function changeOrCreateSubscription(req, res) {
   console.log(root, 'REQUEST: COMPLETE')
 }
 
+async function replayCreateEvent(req, res, next) {
+  try {
+    const { replayId } = req.params
+    await service.replayCreateSubscription(replayId)
+
+    res.status(200)
+  } catch (err) {
+    console.error(root, 'ERROR Replaying event')
+    next(err)
+  }
+}
+
+async function fakeItTillYouMakeIt(req, res, next) {
+  try {
+    const organizationId = service.changeOrCreateSubscription()
+
+  } catch (err) {
+    next(err)
+  }
+}
+
+router.get('/create/replay/:replayId', replayCreateEvent)
+router.get('/create/fake', fakeItTillYouMakeIt)
+
 router.use(validateOAuthSignature)
 router.use(fetchEvent)
+
 router.get('/create', changeOrCreateSubscription)
 router.get('/change', changeOrCreateSubscription)
 router.get('/cancel', sample)

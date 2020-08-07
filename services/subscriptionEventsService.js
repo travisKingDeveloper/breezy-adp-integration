@@ -1,5 +1,6 @@
 const companyService = require('./companyService')
 const integrationService = require('./integrationService')
+const integrationEventService = require('./integrationEventService')
 
 const root = '[SUBSCRIPTION-EVENT]'
 async function changeOrCreateSubscription(payload) {
@@ -23,8 +24,16 @@ async function changeOrCreateSubscription(payload) {
   }
 }
 
+// TODO TKING for testing purposes only
+async function replayCreateSubscription(eventId) {
+  const event = await integrationEventService.getEvent(eventId)
+
+  return changeOrCreateSubscription(event.payload)
+}
+
 
 
 module.exports = {
+  replayCreateSubscription,
   changeOrCreateSubscription
 }

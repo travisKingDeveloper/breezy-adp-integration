@@ -35,14 +35,21 @@ async function getIntegration (serviceId, { companyId, organizationId }) {
   }
 }
 
-async function upsertCompanyIntegration(serviceId, { companyId, organizationId }) {
+async function upsertCompanyIntegration(serviceId, { companyId, organizationId, ...rest }) {
   try {
+    const body = {
+      company_id: companyId,
+      organization_id: organizationId,
+      ...rest,
+    }
+
+    if (!body.organization_id) {
+      delete body.organizationId
+    }
+
     const response = await request.put(`${baseUrl}/company/${companyId}/integrations/${serviceId}/no-overwrite`, {
       qs: { acting_user_id: 'nimblebot' },
-      body: {
-        company_id: companyId,
-        organization_id: organizationId,
-      },
+      body,
       json: true,
     })
 
@@ -58,6 +65,6 @@ const ADP_RUN = 'adp-run'
 module.exports = {
   getIntegrationNow: ({ companyId, organizationId }) => getIntegration(ADP_NOW, { companyId, organizationId }),
   getIntegrationRun: ({ companyId, organizationId }) => getIntegration(ADP_RUN, { companyId, organizationId }),
-  createIntegrationNow: ({ companyId, organizationId }) => upsertCompanyIntegration(ADP_NOW, { companyId, organizationId }),
-  createIntegrationRun: ({ companyId, organizationId }) => upsertCompanyIntegration(ADP_RUN, { companyId, organizationId }),
+  createIntegrationNow: ({ companyId, ...rest }) => upsertCompanyIntegration(ADP_NOW, { companyId, ...rest }),
+  createIntegrationRun: ({ companyId, ...rest }) => upsertCompanyIntegration(ADP_RUN, { companyId, ...rest }),
 }

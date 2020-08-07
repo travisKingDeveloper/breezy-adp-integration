@@ -1,6 +1,6 @@
 const integrationService = require('./integrationService')
 const userIntegrationModel = require('../models/user_integration')
-const userService = require('./userService')
+const userService = require('./breezyUserService')
 
 async function processAssignedEvent(eventPayload) {
   const {
