@@ -6,6 +6,27 @@ const { COMPANY_SERVICE } = require('../config')
 const baseUrl = `${COMPANY_SERVICE.URL}/api/v1`
 
 const root = '[INTEGRATION-SERVICE]'
+
+async function deleteIntegration(serviceId, { organizationId }) {
+  try {
+    let criteria = {
+      "type": serviceId
+    }
+
+    criteria[`${serviceId}.organization_id`] = organizationId
+
+    await mongo.deleteDocumentAsync({
+      collection: "integration",
+      criteria
+    })
+
+  } catch (err) {
+    console.error(root, 'Unable to delete Integration for organization ', organizationId, serviceId)
+
+    throw err
+  }
+}
+
 async function getIntegration (serviceId, { companyId, organizationId }) {
   try {
     let criteria = {
@@ -69,4 +90,6 @@ module.exports = {
   getIntegrationRun: ({ companyId, organizationId }) => getIntegration(ADP_RUN, { companyId, organizationId }),
   createIntegrationNow: ({ companyId, ...rest }) => upsertCompanyIntegration(ADP_NOW, { companyId, ...rest }),
   createIntegrationRun: ({ companyId, ...rest }) => upsertCompanyIntegration(ADP_RUN, { companyId, ...rest }),
+  deleteIntegrationNow: ({ organizationId }) => deleteIntegration(ADP_NOW, { organizationId}),
+  deleteIntegrationRun: ({ organizationId }) => deleteIntegration(ADP_RUN, { organizationId}),
 }

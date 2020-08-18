@@ -10,7 +10,7 @@ module.exports = {
     URL: 'http://localhost:8080'
   },
   SSO: {
-    REDIRECT_URL: 'https://integrations-travis.ngrok.io/auth/sso/redirect',
+    REDIRECT_URL: 'https://integrations-travis.ngrok.io/api/adp-run/auth/sso/redirect',
     CLIENT_ID: '566c8257-7626-4326-9869-064e8912cb5b',
     CLIENT_SECRET: '2a21ce3c-d6e7-41a0-9a75-fb744752fa7e',
   },
@@ -21,6 +21,9 @@ module.exports = {
   CERTS: {
     CERT_PATH: '/Users/travisking/Repositories/breezy-adp-integration/ssl/adp-cert.cer',
     KEY_PATH: '/Users/travisking/Repositories/breezy-adp-integration/ssl/adp-cert.key',
+  },
+  OAUTH: {
+    CONSUMER_APPLICATION_ID: 'ec7f862d-8863-4775-a47f-4a60a6a6073b',
   },
 
   Redis: {

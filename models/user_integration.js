@@ -3,7 +3,7 @@ const mongo = require('breezy-core/src/db/mongoClient')()
 const COLLECTION_NAME = 'user_adp_integration'
 
 function getUserIntegration(userId, companyId, criteria = {}) {
-  mongo.getDocumentAsync({
+  return mongo.getDocumentAsync({
     collection: COLLECTION_NAME,
     criteria: {
       archived: false,

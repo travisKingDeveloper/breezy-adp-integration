@@ -1,9 +1,8 @@
-const authorization = require('auth-header')
 const crypto = require('crypto')
 const { uuid } = require('uuidv4')
 const request = require('request-promise-native')
 const { EVENTS_AUTH } = require('../../config')
-const { saveEvent, errorCodes } = require('../../services/integrationEventService')
+const { saveEvent } = require('../../services/integrationEventService')
 
 function formatParameters(oauth, queryParams) {
   const params = {
@@ -22,63 +21,6 @@ function formatParameters(oauth, queryParams) {
 
   const formatted = paramList.substring(0, paramList.length-1)
   return formatted
-}
-
-function validateOAuthSignature(req, res, next) {
-  const root = '[ADP-VALIDATE-OAUTH-SIGNATURE]'
-  const auth = authorization.parse(req.headers.authorization)
-
-  const oauthSignature = auth.params.oauth_signature
-  const consumerKey = auth.params.oauth_consumer_key
-  const signatureMethod = auth.params.oauth_signature_method
-
-  if (!oauthSignature) {
-    console.error(root, 'Could not validate signature because it was not present on the request')
-    const err = new Error(`${root} oauth_signature: NOT FOUND`)
-    err.status = errorCodes.UNAUTHORIZED
-    err.response = "Unable to authenticate Client"
-    return next(err)
-  }
-
-  if (consumerKey !== EVENTS_AUTH.CONSUMER_KEY) {
-    console.error(root, 'AUTH Consumer Key is incorrect')
-    const err = new Error(`${root}  Incorrect Consumer Key EXPECTED: ${EVENTS_AUTH.CONSUMER_KEY} RECEIVED: ${consumerKey}`)
-    err.status = errorCodes.UNAUTHORIZED
-    err.response = "Unable to authenticate Client"
-    return next(err)
-  }
-
-  if (signatureMethod !== 'HMAC-SHA1') {
-    console.error(root, 'AUTH Signature Method incorrect')
-    const err = new Error(`${root} Incorrect Signature Method EXPECTED: HMAC-SHA1 RECEIVED: ${signatureMethod}`)
-    err.status = errorCodes.UNAUTHORIZED
-    err.response = "Unable to authenticate Client"
-    return next(err)
-  }
-
-  //TODO TKING Handle Nonce Attacks
-  const urlWithoutQueryParams = req.originalUrl.split('?')[0]
-  const requestUri = `https://${req.get('Host')}${urlWithoutQueryParams}`;
-
-  const formattedParams = formatParameters(auth.params, req.query)
-
-  // TODO TKING Not sure if http/ or https/ because of nginx I assume it will hit https port
-  const text = `${req.method}&${encodeURIComponent(requestUri)}&${encodeURIComponent(formattedParams)}`
-  const key = `${EVENTS_AUTH.CONSUMER_SECRET}&` //Token shared secret is not in the requests given
-
-  console.log(`${root} text used: ${text} key used: ${key}`)
-  const computedHash = crypto.createHmac('sha1', key).update(text).digest().toString('base64')
-  const encodedComputedHash = encodeURIComponent(computedHash)
-
-  console.log(`${root} Provided Hash: ${oauthSignature}, Computed Hash: ${encodedComputedHash} Equal? ${encodedComputedHash === oauthSignature}`)
-  if (encodedComputedHash !== oauthSignature) {
-    const err = new Error(`${root} Provided Hash and Computed Hash are not the same`)
-    err.status = errorCodes.UNAUTHORIZED
-    err.response = "Unable to authenticate Client"
-    return next(err)
-  }
-
-  next()
 }
 
 async function fetchEvent(req, res, next) {
@@ -135,6 +77,5 @@ async function fetchEvent(req, res, next) {
 }
 
 module.exports = {
-  validateOAuthSignature,
   fetchEvent
 }

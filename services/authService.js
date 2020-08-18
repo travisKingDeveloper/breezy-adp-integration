@@ -1,4 +1,4 @@
-const { ATS } = require('../config')
+const { ATS, OAUTH } = require('../config')
 const adpConnectService = require('./adpConnectService')
 const adpUserService = require('./adpUserService')
 const integrationService = require('./integrationService')
@@ -13,7 +13,6 @@ function getRedirectUrl() {
 
   console.log('ACCESS TOKEN', accessToken)
 
-   //TODO TKING Using this access token access user information to get email that we then use to login
    const userInfo =  await adpUserService.getUserInfo(accessToken)
 
    const organizationOid = userInfo.organizationOID
@@ -25,7 +24,7 @@ function getRedirectUrl() {
 
 
 function createAppConsentLink(successUri) {
-  return `https://adpapps.adp.com/consent-manager/pending/direct?consumerApplicationID=ec7f862d-8863-4775-a47f-4a60a6a6073b&successUri=${successUri}`
+  return `https://adpapps.adp.com/consent-manager/pending/direct?consumerApplicationID=${OAUTH.CONSUMER_APPLICATION_ID}&successUri=${successUri}`
 }
 
 function getBreezyRedirectUrl(userEmail, companyId) {

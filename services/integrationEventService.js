@@ -33,7 +33,6 @@ function saveEvent(event) {
 
 function getEvent(eventId) {
   return integrationEventModel.getIntegrationEvent(eventId)
-
 }
 
 module.exports = {

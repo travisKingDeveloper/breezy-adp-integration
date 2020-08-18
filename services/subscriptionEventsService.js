@@ -24,16 +24,24 @@ async function changeOrCreateSubscription(payload) {
   }
 }
 
-// TODO TKING for testing purposes only
-async function replayCreateSubscription(eventId) {
-  const event = await integrationEventService.getEvent(eventId)
+async function deleteSubscription(payload) {
+  try {
+    const {
+      organizationOID,
+    } = payload.configuration
 
-  return changeOrCreateSubscription(event.payload)
+    await integrationService.deleteIntegrationRun({organizationId: organizationOID})
+
+    console.log(root, 'Deleting Integration for Organization', organizationOID)
+
+  } catch (err) {
+    console.error(root, 'Unable to cancel a subscription', err.message)
+
+    return  { success: false }
+  }
 }
 
-
-
 module.exports = {
-  replayCreateSubscription,
-  changeOrCreateSubscription
+  changeOrCreateSubscription,
+  deleteSubscription,
 }
