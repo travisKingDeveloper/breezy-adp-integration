@@ -83,8 +83,8 @@ async function upsertCompanyIntegration(serviceId, { companyId, organizationId, 
   }
 }
 
-const ADP_NOW = 'adp-now'
-const ADP_RUN = 'adp-run'
+const ADP_NOW = 'adpnow'
+const ADP_RUN = 'adprun'
 module.exports = {
   getIntegrationNow: ({ companyId, organizationId }) => getIntegration(ADP_NOW, { companyId, organizationId }),
   getIntegrationRun: ({ companyId, organizationId }) => getIntegration(ADP_RUN, { companyId, organizationId }),

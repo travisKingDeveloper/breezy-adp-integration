@@ -3,6 +3,7 @@ const service = require('../services/candidateOnboardingService')
 
 router.post('/company/:companyId/candidates', async (req, res, next) => {
   try {
+    // workers: [ { candidate_id } ]
     const { workers } = req.body
     const { companyId } = req.params
 

@@ -25,7 +25,7 @@ const errorResponse = {
     ]
 }
 
-const root = "[ADP-VALIDATIONS]"
+const root = '[ADP-VALIDATIONS]'
 async function validateCreateADPCompany(req, res) {
   try {
     const { friendly_company_id } = req.body

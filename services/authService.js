@@ -1,4 +1,5 @@
 const { ATS, OAUTH } = require('../config')
+const accessManagementService = require('./accessManagementService')
 const adpConnectService = require('./adpConnectService')
 const adpUserService = require('./adpUserService')
 const integrationService = require('./integrationService')
@@ -13,13 +14,27 @@ function getRedirectUrl() {
 
   console.log('ACCESS TOKEN', accessToken)
 
-   const userInfo =  await adpUserService.getUserInfo(accessToken)
+  const userInfo =  await adpUserService.getUserInfo(accessToken)
 
-   const organizationOid = userInfo.organizationOID
+  if (!userInfo || !userInfo.organizationOID || !userInfo.email) {
+    return ATS.URL
+  }
 
-   const integration = await integrationService.getIntegrationRun({ organizationId: organizationOid })
+  const organizationOid = userInfo.organizationOID
 
-  return getBreezyRedirectUrl(userInfo.email, integration.company_id)
+  const companyIntegration = await integrationService.getIntegrationRun({ organizationId: organizationOid })
+
+  if (!companyIntegration || !companyIntegration.company_id) {
+    return ATS.URL
+  }
+
+  const userIntegration = await accessManagementService.getUserIntegration(userInfo.email, companyIntegration.company_id)
+
+  if (!userIntegration || !userIntegration._id) {
+    return ATS.URL
+  }
+
+  return getBreezyRedirectUrl(userInfo.email, companyIntegration.company_id)
 }
 
 

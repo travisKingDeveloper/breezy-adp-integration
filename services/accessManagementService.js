@@ -81,7 +81,20 @@ async function processUnassignedEvent(eventPayload) {
   return userIntegrationModel.archiveUserIntegration(user._id, companyId)
 }
 
+async function getUserIntegration(email, companyId) {
+  const user = await userService.getUserByEmail(email)
+
+  if (!user || user && !user._id) {
+    return undefined
+  }
+
+  const integration = await userIntegrationModel.getUserIntegration(user._id, companyId)
+
+  return integration
+}
+
 module.exports = {
+  getUserIntegration,
   processAssignedEvent,
   processUnassignedEvent,
 }

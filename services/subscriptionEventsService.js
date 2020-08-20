@@ -34,6 +34,8 @@ async function deleteSubscription(payload) {
 
     console.log(root, 'Deleting Integration for Organization', organizationOID)
 
+    return  { success: true, message: 'Successfully Cancelled Subscription' }
+
   } catch (err) {
     console.error(root, 'Unable to cancel a subscription', err.message)
 

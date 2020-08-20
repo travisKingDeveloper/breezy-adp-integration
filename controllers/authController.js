@@ -2,11 +2,6 @@ const router = require('express').Router()
 const service = require('../services/authService')
 
 const root = '[ADP-AUTH]'
-function sample(req, res) {
-  console.log(root, 'Hit me!')
-
-  res.status(204).json({ ok: true })
-}
 
 async function initiateSSO(req, res) {
   console.log('req.path', req.path)
@@ -38,7 +33,5 @@ async function redirectToPlatform(req, res, next) {
 
 router.get('/sso', initiateSSO)
 router.get('/sso/redirect', redirectToPlatform)
-router.get('/sso/logout', sample)
-// router.all('/company/tokens', )
 
 module.exports = router
