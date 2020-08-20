@@ -4,6 +4,7 @@ const adpConnectService = require('./adpConnectService')
 const request = require('request-promise-native')
 const { CERTS } = require('../config')
 const candidateService = require('./candidateService')
+const refreshService = require('./refreshService')
 const { createWorkerRequest } = require('../models/worker')
 
 const onboardWorkersUrl = 'https://api.adp.com/events/staffing/v1/applicant.onboard'
@@ -11,8 +12,9 @@ const onboardWorkersUrlMeta = 'https://api.adp.com/events/staffing/v1/applicant.
 
 const baseADPUrl = 'https://api.adp.com'
 async function onboardWorkers(companyId, candidateIds) {
+  await refreshService.refreshCompanyToken(companyId)
 
-  const { client_id, client_secret } = await integrationService.getIntegrationRun({ companyId })
+  const { client_secret, client_id } = await integrationService.getIntegrationRun({ companyId })
 
   const { accessToken } = await adpConnectService.getBreezyTokenOnBehalfOfOrganization({
     clientSecret: client_secret,
