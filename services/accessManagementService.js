@@ -41,13 +41,14 @@ async function processAssignedEvent(eventPayload) {
     }
   }
 
-  let userIntegration = await userIntegrationModel.getUserIntegration(user._id, companyId, { archvied: undefined })
+  let userIntegration = await userIntegrationModel.getUserIntegration(user._id, companyId)
 
   if (!userIntegration) {
     await userIntegrationModel.createUserIntegration({
       user_id: user._id,
       company_id: companyId,
       tokens: {},
+      archived: false,
     })
   } else if (userIntegration && userIntegration.archived) {
     await userIntegrationModel.archiveUserIntegration(user._id, companyId, false)
@@ -88,7 +89,7 @@ async function getUserIntegration(email, companyId) {
     return undefined
   }
 
-  const integration = await userIntegrationModel.getUserIntegration(user._id, companyId)
+  const integration = await userIntegrationModel.getUserIntegration(user._id, companyId, { archived: false })
 
   return integration
 }

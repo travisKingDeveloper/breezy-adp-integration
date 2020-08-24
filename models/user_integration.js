@@ -6,7 +6,6 @@ function getUserIntegration(userId, companyId, criteria = {}) {
   return mongo.getDocumentAsync({
     collection: COLLECTION_NAME,
     criteria: {
-      archived: false,
       ...criteria,
       user_id: userId,
       company_id: companyId,
